@@ -34,7 +34,7 @@ import { User } from '@app/users/entities/user.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
-      synchronize: process.env.NODE_ENV !== 'prod',
+      synchronize: true,
       logging: false,
       entities: [Message, User],
       ssl: process.env.NODE_ENV === 'prod' && { rejectUnauthorized: false },

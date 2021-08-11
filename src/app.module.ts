@@ -37,7 +37,7 @@ import { User } from '@app/users/entities/user.entity';
       synchronize: process.env.NODE_ENV !== 'prod',
       logging: false,
       entities: [Message, User],
-      ssl: { rejectUnauthorized: false },
+      ssl: process.env.NODE_ENV === 'prod' && { rejectUnauthorized: false },
     }),
     ChatModule,
     AuthModule,

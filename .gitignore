@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# ENV
+.dev.env
+
 # Documentation
 /documentation
 

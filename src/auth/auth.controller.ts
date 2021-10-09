@@ -50,6 +50,8 @@ export class AuthController {
 
     res.cookie('jwt', result['access_token'], {
       maxAge: 36000000,
+      sameSite: 'none',
+      secure: true,
     });
     return {
       isSuccess: true,
@@ -93,6 +95,8 @@ export class AuthController {
 
     res.cookie('jwt', result['access_token'], {
       maxAge: 36000000,
+      sameSite: 'none',
+      secure: true,
     });
 
     return {

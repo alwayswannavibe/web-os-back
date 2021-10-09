@@ -41,21 +41,20 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<CoreResponse> {
+  ): Promise<any> {
     const result = await this.authService.login(loginDto);
 
     if ((result as CoreResponse).error === CustomError.WrongLoginOrPassword) {
-      res.status(HttpStatus.UNAUTHORIZED).json(result);
+      return res.status(HttpStatus.UNAUTHORIZED).json(result);
     }
 
-    res.cookie('jwt', result['access_token'], {
-      maxAge: 36000000,
-      sameSite: 'none',
-      secure: true,
-    });
-    return {
-      isSuccess: true,
-    };
+    return res
+      .cookie('jwt', result['access_token'], {
+        maxAge: 36000000,
+        sameSite: 'none',
+        secure: true,
+      })
+      .json(result);
   }
 
   @Post('register')
@@ -79,40 +78,39 @@ export class AuthController {
   async register(
     @Body() registrationDto: RegistrationDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<CoreResponse> {
+  ): Promise<any> {
     const result = await this.authService.register(registrationDto);
 
     if ((result as CoreResponse).error === CustomError.AlreadyExist) {
-      res.status(HttpStatus.CONFLICT).json(result);
+      return res.status(HttpStatus.CONFLICT).json(result);
     }
 
     if (
       (result as CoreResponse).error ===
       CustomError.UsernameIncompatibleWithPattern
     ) {
-      res.status(HttpStatus.BAD_REQUEST).json(result);
+      return res.status(HttpStatus.BAD_REQUEST).json(result);
     }
 
-    res.cookie('jwt', result['access_token'], {
-      maxAge: 36000000,
-      sameSite: 'none',
-      secure: true,
-    });
-
-    return {
-      isSuccess: true,
-    };
+    return res
+      .cookie('jwt', result['access_token'], {
+        maxAge: 36000000,
+        sameSite: 'none',
+        secure: true,
+      })
+      .json(result);
   }
 
   @Post('logout')
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.cookie('jwt', '', {
-      expires: new Date(1),
-      sameSite: 'none',
-      secure: true,
-    });
-    return {
-      isSuccess: true,
-    };
+    return res
+      .cookie('jwt', '', {
+        expires: new Date(1),
+        sameSite: 'none',
+        secure: true,
+      })
+      .json({
+        isSuccess: true,
+      });
   }
 }

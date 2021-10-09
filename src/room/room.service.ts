@@ -65,7 +65,7 @@ export class RoomService {
       roomWithAdditionFields.numberOfNewMessages = messages.filter(
         (message) =>
           !message.listOfReaders.includes(user.id) &&
-          message.owner.id === user.id,
+          message.owner.id !== user.id,
       ).length;
       roomWithAdditionFields.lastMessage =
         messages[messages.length - 1] || null;

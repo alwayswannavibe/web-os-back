@@ -108,7 +108,9 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res: Response): Promise<CoreResponse> {
+  async logout(
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<CoreResponse> {
     res.cookie('jwt', '', {
       expires: new Date(1),
       sameSite: 'none',

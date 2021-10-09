@@ -1,9 +1,8 @@
-// Lib
-import { IsNotEmpty } from 'class-validator';
+// Common
+import { CustomError } from '@app/common/enums/customError.enum';
 
 export class CoreResponse {
-  error?: string;
+  error?: CustomError;
 
-  @IsNotEmpty()
   isSuccess: boolean;
 }

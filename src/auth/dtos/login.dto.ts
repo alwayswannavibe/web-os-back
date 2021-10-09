@@ -1,7 +1,7 @@
 // Libraries
 import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class RegistrationDto {
+export class LoginDto {
   @IsString()
   @IsNotEmpty()
   @MinLength(5)

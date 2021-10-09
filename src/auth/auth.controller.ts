@@ -107,7 +107,7 @@ export class AuthController {
   @Post('logout')
   logout(@Res() res: Response) {
     res.cookie('jwt', '', {
-      maxAge: 1,
+      maxAge: -1,
       sameSite: 'none',
       secure: true,
     });

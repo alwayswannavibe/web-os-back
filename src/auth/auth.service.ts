@@ -82,4 +82,8 @@ export class AuthService {
       return null;
     }
   }
+
+  async logout() {
+    return this.jwtService.sign({}, { expiresIn: 1 });
+  }
 }

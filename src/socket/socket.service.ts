@@ -28,9 +28,13 @@ export class SocketService {
 
     if (!user) return;
 
-    await this.socketRepository.delete({
+    const socketInDB = await this.socketRepository.findOne({
       userId: user.id,
     });
+
+    if (socketInDB) {
+      await this.socketRepository.remove(socketInDB);
+    }
 
     const newSocket = this.socketRepository.create({
       userId: user.id,

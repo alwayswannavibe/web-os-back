@@ -40,7 +40,7 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   async login(
     @Body() loginDto: LoginDto,
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
   ): Promise<any> {
     const result = await this.authService.login(loginDto);
 

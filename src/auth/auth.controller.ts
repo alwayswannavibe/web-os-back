@@ -103,4 +103,13 @@ export class AuthController {
       isSuccess: true,
     };
   }
+
+  @Post('logout')
+  logout(@Res() res: Response) {
+    res.cookie('jwt', '', {
+      maxAge: 1,
+      sameSite: 'none',
+      secure: true,
+    });
+  }
 }

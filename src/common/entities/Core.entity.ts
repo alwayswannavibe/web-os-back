@@ -1,4 +1,4 @@
-// Lib
+// Libraries
 import {
   CreateDateColumn,
   PrimaryGeneratedColumn,
@@ -11,6 +11,7 @@ export class CoreEntity {
 
   @CreateDateColumn()
   createdAt: Date;
+
   @UpdateDateColumn()
   updatedAt: Date;
 }

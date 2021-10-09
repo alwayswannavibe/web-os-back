@@ -1,4 +1,4 @@
-// Lib
+// Libraries
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
@@ -7,10 +7,25 @@ import * as joi from 'joi';
 // Chat
 import { ChatModule } from '@app/chat/chat.module';
 import { Message } from '@app/chat/entities/Message.entity';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { AppController } from '@app/app.controller';
-import { User } from '@app/users/entities/user.entity';
+
+// Auth
+import { AuthModule } from '@app/auth/auth.module';
+
+// User
+import { User } from '@app/user/entities/user.entity';
+import { UserModule } from '@app/user/user.module';
+import { UserController } from '@app/user/user.controller';
+
+// Room
+import { Room } from './room/entities/Room.entity';
+import { RoomModule } from '@app/room/room.module';
+
+// Socket
+import { SocketEntity } from '@app/socket/entities/socket.entity';
+import { SocketModule } from '@app/socket/socket.module';
+
+// Jwt
+import { JwtLocalModule } from '@app/jwt/jwtLocal.module';
 
 @Module({
   imports: [
@@ -36,13 +51,16 @@ import { User } from '@app/users/entities/user.entity';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: false,
-      entities: [Message, User],
+      entities: [Message, User, SocketEntity, Room],
       ssl: process.env.NODE_ENV === 'prod' && { rejectUnauthorized: false },
     }),
     ChatModule,
     AuthModule,
-    UsersModule,
+    UserModule,
+    SocketModule,
+    JwtLocalModule,
+    RoomModule,
   ],
-  controllers: [AppController],
+  controllers: [UserController],
 })
 export class AppModule {}

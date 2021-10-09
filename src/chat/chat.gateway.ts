@@ -1,49 +1,68 @@
-// Lib
+// Libraries
 import {
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
-  OnGatewayInit,
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
+import { AuthGuard } from '@nestjs/passport';
+
+// Common
+import { UserIdAndUsername } from '@app/common/interfaces/userIdAndUsername';
+import { User } from '@app/common/decorators/user.decorator';
+import { CoreResponse } from '@app/common/dtos/CoreResponse.dto';
 
 // Chat
-import { ChatMessageDto } from '@app/chat/dtos/chatMessage.dto';
 import { ChatService } from '@app/chat/chat.service';
+import { HandleMessageDto } from '@app/chat/dtos/handleMessage.dto';
+import { ReadMessageDto } from '@app/chat/dtos/readMessage.dto';
+
+// Socket
+import { SocketService } from '@app/socket/socket.service';
+
+// Room
+import { RoomService } from '@app/room/room.service';
 
 @WebSocketGateway()
-export class ChatGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
-  constructor(private readonly chatService: ChatService) {}
+export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly socketService: SocketService,
+    private readonly roomService: RoomService,
+  ) {}
 
   @WebSocketServer()
   server: Server;
 
-  private logger: Logger = new Logger('AppGateway');
-
-  afterInit() {
-    this.logger.log('Init');
-  }
-
   handleDisconnect(client: Socket) {
-    this.logger.log(`Client disconnected: ${client.id}`);
+    this.socketService.removeSocket(client);
   }
 
   handleConnection(client: Socket) {
-    this.logger.log(`Client connected: ${client.id}`);
+    this.socketService.addSocket(client);
   }
 
+  @UseGuards(AuthGuard('jwt'))
+  @UsePipes(ValidationPipe)
   @SubscribeMessage('chatMsg')
-  async handleMessage(client: Socket, payload: ChatMessageDto): Promise<void> {
-    const result = await this.chatService.handleMessage(payload);
-    if (result.error) {
-      return;
-    }
+  async handleMessage(
+    @User() user: UserIdAndUsername,
+    @MessageBody() handleMessageDto: HandleMessageDto,
+  ): Promise<CoreResponse> {
+    return this.chatService.handleMessage(handleMessageDto, user, this.server);
+  }
 
-    this.server.emit('chatUpdate');
+  @UseGuards(AuthGuard('jwt'))
+  @UsePipes(ValidationPipe)
+  @SubscribeMessage('readMessages')
+  async readMessages(
+    @User() user: UserIdAndUsername,
+    @MessageBody() readMessageDto: ReadMessageDto,
+  ): Promise<CoreResponse> {
+    return this.chatService.readMessages(readMessageDto, user, this.server);
   }
 }

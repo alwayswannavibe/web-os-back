@@ -23,7 +23,8 @@ import { RegistrationDto } from '@app/auth/dtos/registration.dto';
 @Controller('auth')
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) {
+  }
 
   @Post('login')
   @ApiOperation({ summary: 'Login user' })
@@ -40,21 +41,23 @@ export class AuthController {
   @UsePipes(ValidationPipe)
   async login(
     @Body() loginDto: LoginDto,
-    @Res() res: Response,
-  ): Promise<any> {
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<CoreResponse> {
     const result = await this.authService.login(loginDto);
 
     if ((result as CoreResponse).error === CustomError.WrongLoginOrPassword) {
-      return res.status(HttpStatus.UNAUTHORIZED).json(result);
+      res.status(HttpStatus.UNAUTHORIZED);
+      return result as CoreResponse;
     }
 
-    return res
-      .cookie('jwt', result['access_token'], {
-        maxAge: 36000000,
-        sameSite: 'none',
-        secure: true,
-      })
-      .json(result);
+    res.cookie('jwt', result['access_token'], {
+      maxAge: 36000000,
+      sameSite: 'none',
+      secure: true,
+    });
+    return {
+      isSuccess: true,
+    };
   }
 
   @Post('register')
@@ -78,39 +81,42 @@ export class AuthController {
   async register(
     @Body() registrationDto: RegistrationDto,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<any> {
+  ): Promise<CoreResponse> {
     const result = await this.authService.register(registrationDto);
 
     if ((result as CoreResponse).error === CustomError.AlreadyExist) {
-      return res.status(HttpStatus.CONFLICT).json(result);
+      res.status(HttpStatus.CONFLICT);
+      return result as CoreResponse;
     }
 
     if (
       (result as CoreResponse).error ===
       CustomError.UsernameIncompatibleWithPattern
     ) {
-      return res.status(HttpStatus.BAD_REQUEST).json(result);
+      res.status(HttpStatus.BAD_REQUEST);
+      return result as CoreResponse;
     }
 
-    return res
-      .cookie('jwt', result['access_token'], {
-        maxAge: 36000000,
-        sameSite: 'none',
-        secure: true,
-      })
-      .json(result);
+    res.cookie('jwt', result['access_token'], {
+      maxAge: 36000000,
+      sameSite: 'none',
+      secure: true,
+    });
+    return {
+      isSuccess: true,
+    };
   }
 
   @Post('logout')
-  async logout(@Res({ passthrough: true }) res: Response) {
-    return res
-      .cookie('jwt', '', {
-        expires: new Date(1),
-        sameSite: 'none',
-        secure: true,
-      })
-      .json({
-        isSuccess: true,
-      });
+  async logout(@Res({ passthrough: true }) res: Response): Promise<CoreResponse> {
+    res.cookie('jwt', '', {
+      expires: new Date(1),
+      sameSite: 'none',
+      secure: true,
+    });
+
+    return {
+      isSuccess: true,
+    };
   }
 }

@@ -1,11 +1,16 @@
+// Libraries
 import { Module } from '@nestjs/common';
-import { AuthService } from '@app/auth/auth.service';
-import { UserModule } from '@app/user/user.module';
 import { PassportModule } from '@nestjs/passport';
-import { JwtStrategy } from './strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '@app/user/entities/user.entity';
+
+// Auth
+import { AuthService } from '@app/auth/auth.service';
+import { JwtStrategy } from '@app/auth/strategies/jwt.strategy';
 import { AuthController } from '@app/auth/auth.controller';
+
+// User
+import { UserModule } from '@app/user/user.module';
+import { User } from '@app/user/entities/user.entity';
 
 @Module({
   providers: [AuthService, JwtStrategy],

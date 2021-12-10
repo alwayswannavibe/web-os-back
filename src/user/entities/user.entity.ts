@@ -1,13 +1,13 @@
 // Libraries
 import { BeforeInsert, Column, Entity, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { ApiProperty } from '@nestjs/swagger';
 
 // Common
 import { CoreEntity } from '@app/common/entities/Core.entity';
 
 // Chat
 import { Message } from '@app/chat/entities/Message.entity';
+import { ToDo } from '@app/toDo/entities/ToDo.entity';
 
 @Entity('users')
 export class User extends CoreEntity {
@@ -25,6 +25,9 @@ export class User extends CoreEntity {
 
   @OneToMany(() => Message, (message) => message.owner)
   messages: Message[];
+
+  @OneToMany(() => ToDo, (toDo) => toDo.owner)
+  toDoItems: ToDo[];
 
   @Column('int', { default: {}, array: true })
   roomsIds: number[];

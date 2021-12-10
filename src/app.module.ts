@@ -27,6 +27,10 @@ import { SocketModule } from '@app/socket/socket.module';
 // Jwt
 import { JwtLocalModule } from '@app/jwt/jwtLocal.module';
 
+// ToDoLocal
+import { ToDo } from '@app/toDo/entities/ToDo.entity';
+import { ToDoModule } from '@app/toDo/toDo.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -51,7 +55,7 @@ import { JwtLocalModule } from '@app/jwt/jwtLocal.module';
       database: process.env.DB_DATABASE,
       synchronize: true,
       logging: false,
-      entities: [Message, User, SocketEntity, Room],
+      entities: [Message, User, SocketEntity, Room, ToDo],
       ssl: process.env.NODE_ENV === 'prod' && { rejectUnauthorized: false },
     }),
     ChatModule,
@@ -60,6 +64,7 @@ import { JwtLocalModule } from '@app/jwt/jwtLocal.module';
     SocketModule,
     JwtLocalModule,
     RoomModule,
+    ToDoModule,
   ],
   controllers: [UserController],
 })
